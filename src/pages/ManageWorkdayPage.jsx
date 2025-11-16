@@ -1,6 +1,12 @@
-import Calendar from 'react-calendar';
-import '../css/Calendar.css';
-import React, { useCallback, useEffect, useRef, useState, useContext } from 'react';
+import Calendar from "react-calendar";
+import "../css/Calendar.css";
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from "react";
 import {
   Switch,
   Typography,
@@ -10,10 +16,10 @@ import {
   Box,
   Paper,
   InputAdornment,
-} from '@mui/material';
-import { BaitoContext } from '../context/BaitoContext.jsx';
-import ConfirmationModal from '../components/ConfirmationModal.jsx';
-import '../css/ManageWorkdayPage.css';
+} from "@mui/material";
+import { BaitoContext } from "../context/BaitoContext.jsx";
+import ConfirmationModal from "../components/ConfirmationModal.jsx";
+import "../css/ManageWorkdayPage.css";
 
 function ManageWorkdayPage() {
   const {
@@ -34,7 +40,9 @@ function ManageWorkdayPage() {
   const [workdays, setWorkdays] = useState([]);
 
   const [currentWage, setCurrentWage] = useState(
-    savedDate.getDay() == 0 || savedDate.getDay() == 6 ? WEEKEND_WAGE : WEEKDAY_WAGE
+    savedDate.getDay() == 0 || savedDate.getDay() == 6
+      ? WEEKEND_WAGE
+      : WEEKDAY_WAGE
   );
 
   const [isAddMode, setIsAddMode] = useState(true); // true -> Add , false -> Remove
@@ -55,7 +63,7 @@ function ManageWorkdayPage() {
 
   const body = document.body;
   const bodyRef = useRef(body);
-  bodyRef.current.setAttribute('tabindex', '-1');
+  bodyRef.current.setAttribute("tabindex", "-1");
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -68,16 +76,16 @@ function ManageWorkdayPage() {
     (_, i) => i * PAY_INTERVAL_MINUTES
   );
 
-  const [keyBuffer, setKeyBuffer] = useState('');
+  const [keyBuffer, setKeyBuffer] = useState("");
   const lastKeyTimeRef = useRef(0);
 
   const handleKeyPress = useCallback(
     (e) => {
-      if (e.key >= '0' && e.key <= '9') {
+      if (e.key >= "0" && e.key <= "9") {
         const now = Date.now();
         const timeSinceLast = now - lastKeyTimeRef.current;
         lastKeyTimeRef.current = now;
-        let newBuffer = '';
+        let newBuffer = "";
 
         if (timeSinceLast > 1000) {
           newBuffer = e.key;
@@ -88,43 +96,45 @@ function ManageWorkdayPage() {
         setKeyBuffer(newBuffer);
         const day = parseInt(newBuffer);
         if (day >= 1 && day <= 31) {
-          setSavedDate((prev) => new Date(prev.getFullYear(), prev.getMonth(), day));
-          console.log('Keyboard Shortcut: Changed day to', day);
+          setSavedDate(
+            (prev) => new Date(prev.getFullYear(), prev.getMonth(), day)
+          );
+          console.log("Keyboard Shortcut: Changed day to", day);
           console.log(workdays);
         }
-      } else if (e.key == ' ') {
+      } else if (e.key == " ") {
         if (isAddMode) setIsAddMode(false);
         else setIsAddMode(true);
-      } else if (e.key === 'Enter') {
+      } else if (e.key === "Enter") {
         console.log(isModalOpen);
         if (isModalOpen) handleConfirm();
         else setIsModalOpen(true);
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         setSavedDate((prev) => {
           const newDate = new Date(prev);
           newDate.setMonth(newDate.getMonth() + 1);
           return newDate;
         });
-      } else if (e.key === 'ArrowLeft') {
+      } else if (e.key === "ArrowLeft") {
         setSavedDate((prev) => {
           const newDate = new Date(prev);
           newDate.setMonth(newDate.getMonth() - 1);
           return newDate;
         });
-      } else if (e.key === 'Tab') {
+      } else if (e.key === "Tab") {
         e.preventDefault();
         const focusedElement = document.activeElement;
         switch (focusedElement.id) {
-          case 'StartHour':
+          case "StartHour":
             startMinuteRef.current?.focus();
             break;
-          case 'StartMinute':
+          case "StartMinute":
             endHourRef.current?.focus();
             break;
-          case 'EndHour':
+          case "EndHour":
             endMinuteRef.current?.focus();
             break;
-          case 'EndMinute':
+          case "EndMinute":
             startHourRef.current?.focus();
             break;
           default:
@@ -138,10 +148,15 @@ function ManageWorkdayPage() {
 
   useEffect(() => {
     const loadWorkdays = async () => {
-      const workdaysForMonth = await fetchWorkdays(savedDate.getFullYear(), savedDate.getMonth());
+      const workdaysForMonth = await fetchWorkdays(
+        savedDate.getFullYear(),
+        savedDate.getMonth()
+      );
       setWorkdays(workdaysForMonth);
 
-      const workday = workdaysForMonth.find((w) => w.day === savedDate.getDate());
+      const workday = workdaysForMonth.find(
+        (w) => w.day === savedDate.getDate()
+      );
       if (workday) {
         setStartTime(workday.startTime);
         setEndTime(workday.endTime);
@@ -150,29 +165,40 @@ function ManageWorkdayPage() {
         setStartTime(DEFAULT_START_TIME);
         setEndTime(DEFAULT_END_TIME);
         setCurrentWage(
-          savedDate.getDay() === 0 || savedDate.getDay() === 6 ? WEEKEND_WAGE : WEEKDAY_WAGE
+          savedDate.getDay() === 0 || savedDate.getDay() === 6
+            ? WEEKEND_WAGE
+            : WEEKDAY_WAGE
         );
       }
     };
     loadWorkdays();
-  }, [savedDate, fetchWorkdays, WEEKDAY_WAGE, WEEKEND_WAGE, DEFAULT_START_TIME, DEFAULT_END_TIME]);
+  }, [
+    savedDate,
+    fetchWorkdays,
+    WEEKDAY_WAGE,
+    WEEKEND_WAGE,
+    DEFAULT_START_TIME,
+    DEFAULT_END_TIME,
+  ]);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
   }, [handleKeyPress]);
 
   const handleDayClick = (date) => {
-    setSavedDate((prev) => new Date(prev.getFullYear(), prev.getMonth(), date.getDate()));
+    setSavedDate(
+      (prev) => new Date(prev.getFullYear(), prev.getMonth(), date.getDate())
+    );
   };
 
   const handleTimeChange = (timeType, field) => (e) => {
     e.preventDefault();
     const value = parseInt(e.target.value);
 
-    if (timeType === 'start') {
+    if (timeType === "start") {
       setStartTime((prev) => ({ ...prev, [field]: value }));
     } else {
       setEndTime((prev) => ({ ...prev, [field]: value }));
@@ -193,7 +219,7 @@ function ManageWorkdayPage() {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    console.log('Confirmation cancelled.');
+    console.log("Confirmation cancelled.");
   };
 
   const handleConfirm = (e) => {
@@ -208,7 +234,7 @@ function ManageWorkdayPage() {
           wage: currentWage,
         };
         addWorkday(savedDate.getFullYear(), savedDate.getMonth(), workday);
-        console.log('Workday Added:', workday);
+        console.log("Workday Added:", workday);
       } else {
         const workday = {
           day: selectedDay,
@@ -216,13 +242,22 @@ function ManageWorkdayPage() {
           endTime: endTime,
           wage: currentWage,
         };
-        updateWorkday(savedDate.getFullYear(), savedDate.getMonth(), selectedDay, workday);
-        console.log('Updated Workday:', workday);
+        updateWorkday(
+          savedDate.getFullYear(),
+          savedDate.getMonth(),
+          selectedDay,
+          workday
+        );
+        console.log("Updated Workday:", workday);
       }
     } else {
       if (workdays.some((savedWorkday) => savedWorkday.day === selectedDay)) {
-        deleteWorkday(savedDate.getFullYear(), savedDate.getMonth(), selectedDay);
-        console.log('Deleted Workday:', selectedDay);
+        deleteWorkday(
+          savedDate.getFullYear(),
+          savedDate.getMonth(),
+          selectedDay
+        );
+        console.log("Deleted Workday:", selectedDay);
       }
     }
     setIsModalOpen(false);
@@ -231,13 +266,16 @@ function ManageWorkdayPage() {
   return (
     <div className="page" id="workday-page">
       <div className="mode-switch">
-        <Paper elevation={1} sx={{ display: 'flex', alignItems: 'center', gap: 0, padding: 1.5 }}>
+        <Paper
+          elevation={1}
+          sx={{ display: "flex", alignItems: "center", gap: 0, padding: 1.5 }}
+        >
           <Typography
             sx={{
-              color: !isAddMode ? 'black' : 'gray',
-              fontWeight: !isAddMode ? 'bold' : 'normal',
+              color: !isAddMode ? "black" : "gray",
+              fontWeight: !isAddMode ? "bold" : "normal",
               width: 50,
-              textAlign: 'center',
+              textAlign: "center",
             }}
           >
             Remove
@@ -247,10 +285,10 @@ function ManageWorkdayPage() {
 
           <Typography
             sx={{
-              color: isAddMode ? 'black' : 'gray',
-              fontWeight: isAddMode ? 'bold' : 'normal',
+              color: isAddMode ? "black" : "gray",
+              fontWeight: isAddMode ? "bold" : "normal",
               width: 50,
-              textAlign: 'center',
+              textAlign: "center",
             }}
           >
             Add
@@ -260,18 +298,25 @@ function ManageWorkdayPage() {
 
       <div className="calendar-container">
         <Calendar
-          className={'react-calendar'}
+          className={"react-calendar"}
           value={savedDate}
           onClickDay={handleDayClick}
           onActiveStartDateChange={({ activeStartDate }) => {
-            setSavedDate(new Date(activeStartDate.getFullYear(), activeStartDate.getMonth()));
+            setSavedDate(
+              new Date(
+                activeStartDate.getFullYear(),
+                activeStartDate.getMonth()
+              )
+            );
 
             bodyRef.current.focus();
           }}
           view="month"
           showNeighboringMonth={false}
           tileClassName={({ date }) =>
-            workdays.some((workday) => workday.day === date.getDate()) ? 'workday' : ''
+            workdays.some((workday) => workday.day === date.getDate())
+              ? "workday"
+              : ""
           }
         />
       </div>
@@ -282,17 +327,17 @@ function ManageWorkdayPage() {
             <div className="select-time">
               <Box
                 sx={{
-                  display: 'flex',
+                  display: "flex",
                   gap: 1,
                   marginY: 3,
                   width: 225,
-                  alignItems: 'center',
+                  alignItems: "center",
                 }}
               >
                 <Typography
                   sx={{
-                    color: !isAddMode ? 'text.primary' : 'text.secondary',
-                    whiteSpace: 'nowrap',
+                    color: !isAddMode ? "text.primary" : "text.secondary",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   Start Time
@@ -300,7 +345,7 @@ function ManageWorkdayPage() {
                 <TextField
                   select
                   value={startTime.hour}
-                  onChange={handleTimeChange('start', 'hour')}
+                  onChange={handleTimeChange("start", "hour")}
                   label="Hours"
                   size="small"
                   fullWidth
@@ -309,14 +354,14 @@ function ManageWorkdayPage() {
                 >
                   {hourOptions.map((hour) => (
                     <MenuItem key={`start-h-${hour}`} value={hour}>
-                      {String(hour).padStart(2, '0')}
+                      {String(hour).padStart(2, "0")}
                     </MenuItem>
                   ))}
                 </TextField>
                 <TextField
                   select
                   value={startTime.minute}
-                  onChange={handleTimeChange('start', 'minute')}
+                  onChange={handleTimeChange("start", "minute")}
                   label="Minutes"
                   size="small"
                   type="number"
@@ -326,24 +371,24 @@ function ManageWorkdayPage() {
                 >
                   {minuteOptions.map((minute) => (
                     <MenuItem key={`start-h-${minute}`} value={minute}>
-                      {String(minute).padStart(2, '0')}
+                      {String(minute).padStart(2, "0")}
                     </MenuItem>
                   ))}
                 </TextField>
               </Box>
               <Box
                 sx={{
-                  display: 'flex',
+                  display: "flex",
                   gap: 1,
                   marginTop: 3,
                   width: 225,
-                  alignItems: 'center',
+                  alignItems: "center",
                 }}
               >
                 <Typography
                   sx={{
-                    color: !isAddMode ? 'text.primary' : 'text.secondary',
-                    whiteSpace: 'nowrap',
+                    color: !isAddMode ? "text.primary" : "text.secondary",
+                    whiteSpace: "nowrap",
                   }}
                 >
                   End Time
@@ -351,7 +396,7 @@ function ManageWorkdayPage() {
                 <TextField
                   select
                   value={endTime.hour}
-                  onChange={handleTimeChange('end', 'hour')}
+                  onChange={handleTimeChange("end", "hour")}
                   label="Hours"
                   size="small"
                   fullWidth
@@ -361,14 +406,14 @@ function ManageWorkdayPage() {
                 >
                   {hourOptions.map((hour) => (
                     <MenuItem key={`end-h-${hour}`} value={hour}>
-                      {String(hour).padStart(2, '0')}
+                      {String(hour).padStart(2, "0")}
                     </MenuItem>
                   ))}
                 </TextField>
                 <TextField
                   select
                   value={endTime.minute}
-                  onChange={handleTimeChange('end', 'minute')}
+                  onChange={handleTimeChange("end", "minute")}
                   label="Minutes"
                   size="small"
                   fullWidth
@@ -377,7 +422,7 @@ function ManageWorkdayPage() {
                 >
                   {minuteOptions.map((minute) => (
                     <MenuItem key={`end-h-${minute}`} value={minute}>
-                      {String(minute).padStart(2, '0')}
+                      {String(minute).padStart(2, "0")}
                     </MenuItem>
                   ))}
                 </TextField>
@@ -385,14 +430,16 @@ function ManageWorkdayPage() {
             </div>
             <Box
               sx={{
-                display: 'flex',
+                display: "flex",
                 gap: 1,
                 marginTop: 3,
                 width: 125,
-                alignItems: 'center',
+                alignItems: "center",
               }}
             >
-              <Typography sx={{ color: 'black', whiteSpace: 'nowrap' }}>Wage</Typography>
+              <Typography sx={{ color: "black", whiteSpace: "nowrap" }}>
+                Wage
+              </Typography>
               <TextField
                 value={currentWage}
                 onChange={handleWageChange}
@@ -400,7 +447,9 @@ function ManageWorkdayPage() {
                 type="number"
                 slotProps={{
                   input: {
-                    endAdornment: <InputAdornment position="end">¥</InputAdornment>,
+                    endAdornment: (
+                      <InputAdornment position="end">¥</InputAdornment>
+                    ),
                   },
                 }}
                 fullWidth
@@ -411,7 +460,11 @@ function ManageWorkdayPage() {
         ) : null}
       </div>
 
-      <Button variant="contained" onClick={handleShowConfirmation} sx={{ marginY: 3, height: 40 }}>
+      <Button
+        variant="contained"
+        onClick={handleShowConfirmation}
+        sx={{ marginY: 3, height: 40 }}
+      >
         Confirm
       </Button>
 
@@ -419,21 +472,19 @@ function ManageWorkdayPage() {
         isOpen={isModalOpen}
         onClose={handleCancel}
         onConfirm={handleConfirm}
-        title={`Confirm ${isAddMode ? 'Addition' : 'Deletion'}`}
+        title={`Confirm ${isAddMode ? "Addition" : "Deletion"}`}
         confirmText="Confirm"
         cancelText="Cancel"
         message={
           isAddMode
-            ? `${savedDate.getMonth()}/${savedDate.getDate()} ${String(startTime.hour).padStart(
+            ? `${savedDate.getMonth()}/${savedDate.getDate()} ${String(
+                startTime.hour
+              ).padStart(2, "0")}:${String(startTime.minute).padStart(
                 2,
-                '0'
-              )}:${String(startTime.minute).padStart(
-                2,
-                '0'
-              )} - ${String(endTime.hour).padStart(2, '0')}:${String(endTime.minute).padStart(
-                2,
-                '0'
-              )}`
+                "0"
+              )} - ${String(endTime.hour).padStart(2, "0")}:${String(
+                endTime.minute
+              ).padStart(2, "0")}`
             : `${savedDate.getMonth()}/${savedDate.getDate()}`
         }
       />

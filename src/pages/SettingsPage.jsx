@@ -1,6 +1,6 @@
-import { useContext, useState, useEffect } from 'react';
-import { BaitoContext } from '../context/BaitoContext';
-import '../css/SettingsPage.css';
+import { useContext, useState, useEffect } from "react";
+import { BaitoContext } from "../context/BaitoContext";
+import "../css/SettingsPage.css";
 import {
   Paper,
   Typography,
@@ -11,7 +11,7 @@ import {
   MenuItem,
   TextField,
   CircularProgress,
-} from '@mui/material';
+} from "@mui/material";
 
 function SettingsPage() {
   const {
@@ -36,10 +36,22 @@ function SettingsPage() {
   } = useContext(BaitoContext);
 
   // Local state for form inputs, initialized with default values
-  const [tempDefaultStartTime, setTempDefaultStartTime] = useState({ hour: 0, minute: 0 });
-  const [tempDefaultEndTime, setTempDefaultEndTime] = useState({ hour: 0, minute: 0 });
-  const [tempWorktimeStart, setTempWorktimeStart] = useState({ hour: 0, minute: 0 });
-  const [tempWorktimeEnd, setTempWorktimeEnd] = useState({ hour: 0, minute: 0 });
+  const [tempDefaultStartTime, setTempDefaultStartTime] = useState({
+    hour: 0,
+    minute: 0,
+  });
+  const [tempDefaultEndTime, setTempDefaultEndTime] = useState({
+    hour: 0,
+    minute: 0,
+  });
+  const [tempWorktimeStart, setTempWorktimeStart] = useState({
+    hour: 0,
+    minute: 0,
+  });
+  const [tempWorktimeEnd, setTempWorktimeEnd] = useState({
+    hour: 0,
+    minute: 0,
+  });
   const [tempWeekdayWage, setTempWeekdayWage] = useState(0);
   const [tempWeekendWage, setTempWeekendWage] = useState(0);
   const [tempCommutingCost, setTempCommutingCost] = useState(0);
@@ -73,40 +85,40 @@ function SettingsPage() {
     const newValue = parseInt(e.target.value, 10);
 
     switch (field) {
-      case 'DefaultStartHour':
+      case "DefaultStartHour":
         setTempDefaultStartTime((prev) => ({ ...prev, hour: newValue }));
         break;
-      case 'DefaultStartMinute':
+      case "DefaultStartMinute":
         setTempDefaultStartTime((prev) => ({ ...prev, minute: newValue }));
         break;
-      case 'DefaultEndHour':
+      case "DefaultEndHour":
         setTempDefaultEndTime((prev) => ({ ...prev, hour: newValue }));
         break;
-      case 'DefaultEndMinute':
+      case "DefaultEndMinute":
         setTempDefaultEndTime((prev) => ({ ...prev, minute: newValue }));
         break;
-      case 'EarliestStartHour':
+      case "EarliestStartHour":
         setTempWorktimeStart((prev) => ({ ...prev, hour: newValue }));
         break;
-      case 'EarliestStartMinute':
+      case "EarliestStartMinute":
         setTempWorktimeStart((prev) => ({ ...prev, minute: newValue }));
         break;
-      case 'LatestEndHour':
+      case "LatestEndHour":
         setTempWorktimeEnd((prev) => ({ ...prev, hour: newValue }));
         break;
-      case 'LatestEndMinute':
+      case "LatestEndMinute":
         setTempWorktimeEnd((prev) => ({ ...prev, minute: newValue }));
         break;
-      case 'WeekdayWage':
+      case "WeekdayWage":
         setTempWeekdayWage(newValue);
         break;
-      case 'WeekendWage':
+      case "WeekendWage":
         setTempWeekendWage(newValue);
         break;
-      case 'CommutingCost':
+      case "CommutingCost":
         setTempCommutingCost(newValue);
         break;
-      case 'PayIntervalMinutes':
+      case "PayIntervalMinutes":
         setTempPayIntervalMinutes(newValue);
         break;
       default:
@@ -141,29 +153,40 @@ function SettingsPage() {
 
     // Save settings to Firebase and notify the user
     await saveSettings(settingsToSave);
-    alert('Settings saved successfully!');
+    alert("Settings saved successfully!");
   };
 
   const generateOptions = (start, end) => {
-    return Array.from({ length: end - start + 1 }, (_, i) => start + i).map((value) => (
-      <MenuItem key={value} value={value}>
-        {value}
-      </MenuItem>
-    ));
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
+      (value) => (
+        <MenuItem key={value} value={value}>
+          {value}
+        </MenuItem>
+      )
+    );
   };
 
   const generateMinuteOptions = (step) => {
-    return Array.from({ length: 60 / step }, (_, i) => i * step).map((value) => (
-      <MenuItem key={value} value={value}>
-        {String(value).padStart(2, '0')}
-      </MenuItem>
-    ));
+    return Array.from({ length: 60 / step }, (_, i) => i * step).map(
+      (value) => (
+        <MenuItem key={value} value={value}>
+          {String(value).padStart(2, "0")}
+        </MenuItem>
+      )
+    );
   };
 
   // Display a loading spinner while fetching settings
   if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
         <CircularProgress />
       </Box>
     );
@@ -171,12 +194,17 @@ function SettingsPage() {
 
   return (
     <div className="page" id="settings-page">
-      <Paper elevation={3} sx={{ padding: 3, maxWidth: 600, margin: '0 auto' }}>
+      <Paper elevation={3} sx={{ padding: 3, maxWidth: 600, margin: "0 auto" }}>
         <Typography variant="h5" gutterBottom sx={{ marginBottom: 3 }}>
           Work Settings
         </Typography>
 
-        <Box component="form" noValidate autoComplete="off" sx={{ display: 'grid', gap: 3 }}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          sx={{ display: "grid", gap: 3 }}
+        >
           {/* Default Work Hours */}
           <Paper elevation={2} sx={{ padding: 3 }}>
             <Typography variant="h6" gutterBottom>
@@ -192,9 +220,12 @@ function SettingsPage() {
                   fullWidth
                   label="Hour"
                   value={tempDefaultStartTime.hour}
-                  onChange={(e) => handleChange(e, 'DefaultStartHour')}
+                  onChange={(e) => handleChange(e, "DefaultStartHour")}
                 >
-                  {generateOptions(tempWorktimeStart.hour, tempDefaultEndTime.hour - 1)}
+                  {generateOptions(
+                    tempWorktimeStart.hour,
+                    tempDefaultEndTime.hour - 1
+                  )}
                 </TextField>
               </Grid>
               <Grid xs={4.5}>
@@ -203,13 +234,18 @@ function SettingsPage() {
                   fullWidth
                   label="Minute"
                   value={tempDefaultStartTime.minute}
-                  onChange={(e) => handleChange(e, 'DefaultStartMinute')}
+                  onChange={(e) => handleChange(e, "DefaultStartMinute")}
                 >
                   {generateMinuteOptions(tempPayIntervalMinutes)}
                 </TextField>
               </Grid>
             </Grid>
-            <Grid container spacing={2} alignItems="center" sx={{ marginTop: 1 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ marginTop: 1 }}
+            >
               <Grid xs={3}>
                 <Typography>End Time:</Typography>
               </Grid>
@@ -219,9 +255,12 @@ function SettingsPage() {
                   fullWidth
                   label="Hour"
                   value={tempDefaultEndTime.hour}
-                  onChange={(e) => handleChange(e, 'DefaultEndHour')}
+                  onChange={(e) => handleChange(e, "DefaultEndHour")}
                 >
-                  {generateOptions(tempDefaultStartTime.hour + 1, tempWorktimeEnd.hour)}
+                  {generateOptions(
+                    tempDefaultStartTime.hour + 1,
+                    tempWorktimeEnd.hour
+                  )}
                 </TextField>
               </Grid>
               <Grid xs={4.5}>
@@ -230,7 +269,7 @@ function SettingsPage() {
                   fullWidth
                   label="Minute"
                   value={tempDefaultEndTime.minute}
-                  onChange={(e) => handleChange(e, 'DefaultEndMinute')}
+                  onChange={(e) => handleChange(e, "DefaultEndMinute")}
                 >
                   {generateMinuteOptions(tempPayIntervalMinutes)}
                 </TextField>
@@ -253,7 +292,7 @@ function SettingsPage() {
                   fullWidth
                   label="Hour"
                   value={tempWorktimeStart.hour}
-                  onChange={(e) => handleChange(e, 'EarliestStartHour')}
+                  onChange={(e) => handleChange(e, "EarliestStartHour")}
                 >
                   {generateOptions(1, tempWorktimeEnd.hour - 1)}
                 </TextField>
@@ -264,13 +303,18 @@ function SettingsPage() {
                   fullWidth
                   label="Minute"
                   value={tempWorktimeStart.minute}
-                  onChange={(e) => handleChange(e, 'EarliestStartMinute')}
+                  onChange={(e) => handleChange(e, "EarliestStartMinute")}
                 >
                   {generateMinuteOptions(tempPayIntervalMinutes)}
                 </TextField>
               </Grid>
             </Grid>
-            <Grid container spacing={2} alignItems="center" sx={{ marginTop: 1 }}>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              sx={{ marginTop: 1 }}
+            >
               <Grid xs={3}>
                 <Typography>Latest End:</Typography>
               </Grid>
@@ -280,7 +324,7 @@ function SettingsPage() {
                   fullWidth
                   label="Hour"
                   value={tempWorktimeEnd.hour}
-                  onChange={(e) => handleChange(e, 'LatestEndHour')}
+                  onChange={(e) => handleChange(e, "LatestEndHour")}
                 >
                   {generateOptions(tempWorktimeStart.hour + 1, 24)}
                 </TextField>
@@ -291,7 +335,7 @@ function SettingsPage() {
                   fullWidth
                   label="Minute"
                   value={tempWorktimeEnd.minute}
-                  onChange={(e) => handleChange(e, 'LatestEndMinute')}
+                  onChange={(e) => handleChange(e, "LatestEndMinute")}
                 >
                   {generateMinuteOptions(tempPayIntervalMinutes)}
                 </TextField>
@@ -311,9 +355,11 @@ function SettingsPage() {
                   label="Weekday Wage"
                   type="number"
                   value={tempWeekdayWage}
-                  onChange={(e) => handleChange(e, 'WeekdayWage')}
+                  onChange={(e) => handleChange(e, "WeekdayWage")}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">¥</InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
@@ -323,9 +369,11 @@ function SettingsPage() {
                   label="Weekend Wage"
                   type="number"
                   value={tempWeekendWage}
-                  onChange={(e) => handleChange(e, 'WeekendWage')}
+                  onChange={(e) => handleChange(e, "WeekendWage")}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">¥</InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
@@ -344,9 +392,11 @@ function SettingsPage() {
                   label="Commuting Cost"
                   type="number"
                   value={tempCommutingCost}
-                  onChange={(e) => handleChange(e, 'CommutingCost')}
+                  onChange={(e) => handleChange(e, "CommutingCost")}
                   InputProps={{
-                    startAdornment: <InputAdornment position="start">¥</InputAdornment>,
+                    startAdornment: (
+                      <InputAdornment position="start">¥</InputAdornment>
+                    ),
                   }}
                 />
               </Grid>
@@ -356,8 +406,12 @@ function SettingsPage() {
                   fullWidth
                   label="Pay Interval"
                   value={tempPayIntervalMinutes}
-                  onChange={(e) => handleChange(e, 'PayIntervalMinutes')}
-                  InputProps={{ endAdornment: <InputAdornment position="end">min</InputAdornment> }}
+                  onChange={(e) => handleChange(e, "PayIntervalMinutes")}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">min</InputAdornment>
+                    ),
+                  }}
                 >
                   {[1, 5, 10, 15, 30, 60].map((value) => (
                     <MenuItem key={value} value={value}>
@@ -370,7 +424,14 @@ function SettingsPage() {
           </Paper>
 
           {/* Action Buttons */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, marginTop: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 2,
+              marginTop: 2,
+            }}
+          >
             <Button variant="contained" color="primary" onClick={handleSave}>
               Save Settings
             </Button>

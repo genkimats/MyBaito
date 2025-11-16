@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebase';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import React, { useState, useEffect } from "react";
+import { db, auth } from "../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -8,8 +8,8 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
-} from 'firebase/auth';
-import { BaitoContext } from './BaitoContext';
+} from "firebase/auth";
+import { BaitoContext } from "./BaitoContext";
 
 export const BaitoManager = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -17,8 +17,14 @@ export const BaitoManager = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Default settings state
-  const [DEFAULT_START_TIME, setDefaultStartTime] = useState({ hour: 17, minute: 0 });
-  const [DEFAULT_END_TIME, setDefaultEndTime] = useState({ hour: 22, minute: 0 });
+  const [DEFAULT_START_TIME, setDefaultStartTime] = useState({
+    hour: 17,
+    minute: 0,
+  });
+  const [DEFAULT_END_TIME, setDefaultEndTime] = useState({
+    hour: 22,
+    minute: 0,
+  });
   const [WORKTIME_START, setWorktimeStart] = useState({ hour: 17, minute: 0 });
   const [WORKTIME_END, setWorktimeEnd] = useState({ hour: 24, minute: 0 });
   const [PAY_INTERVAL_MINUTES, setPayIntervalMinutes] = useState(15);
@@ -28,8 +34,10 @@ export const BaitoManager = ({ children }) => {
   const [WEEKEND_WAGE, setWeekendWage] = useState(1500);
 
   // --- Authentication Functions ---
-  const signup = (email, password) => createUserWithEmailAndPassword(auth, email, password);
-  const login = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  const signup = (email, password) =>
+    createUserWithEmailAndPassword(auth, email, password);
+  const login = (email, password) =>
+    signInWithEmailAndPassword(auth, email, password);
   const loginWithGoogle = () => {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider);
@@ -56,11 +64,11 @@ export const BaitoManager = ({ children }) => {
   // --- Data Management ---
   const saveSettings = async (newSettings) => {
     if (isGuest) {
-      localStorage.setItem('settings', JSON.stringify(newSettings));
+      localStorage.setItem("settings", JSON.stringify(newSettings));
       return;
     }
     if (currentUser) {
-      const settingsRef = doc(db, 'users', currentUser.uid, 'settings', 'main');
+      const settingsRef = doc(db, "users", currentUser.uid, "settings", "main");
       await setDoc(settingsRef, newSettings, { merge: true });
     }
   };
@@ -69,10 +77,16 @@ export const BaitoManager = ({ children }) => {
     const loadSettings = async () => {
       let settings;
       if (isGuest) {
-        const guestSettings = localStorage.getItem('settings');
+        const guestSettings = localStorage.getItem("settings");
         if (guestSettings) settings = JSON.parse(guestSettings);
       } else if (currentUser) {
-        const settingsRef = doc(db, 'users', currentUser.uid, 'settings', 'main');
+        const settingsRef = doc(
+          db,
+          "users",
+          currentUser.uid,
+          "settings",
+          "main"
+        );
         const docSnap = await getDoc(settingsRef);
         if (docSnap.exists()) settings = docSnap.data();
       }
@@ -92,7 +106,8 @@ export const BaitoManager = ({ children }) => {
     if (currentUser || isGuest) loadSettings();
   }, [currentUser, isGuest]);
 
-  const formatKey = (year, month) => `${year}-${String(month + 1).padStart(2, '0')}`;
+  const formatKey = (year, month) =>
+    `${year}-${String(month + 1).padStart(2, "0")}`;
 
   const fetchWorkdays = async (year, month) => {
     const key = formatKey(year, month);
@@ -101,7 +116,7 @@ export const BaitoManager = ({ children }) => {
       return data ? JSON.parse(data) : [];
     }
     if (currentUser) {
-      const docRef = doc(db, 'users', currentUser.uid, 'workdays', key);
+      const docRef = doc(db, "users", currentUser.uid, "workdays", key);
       const docSnap = await getDoc(docRef);
       return docSnap.exists() ? docSnap.data().workdays : [];
     }
@@ -116,20 +131,22 @@ export const BaitoManager = ({ children }) => {
     if (isGuest) {
       localStorage.setItem(key, JSON.stringify(newWorkdays));
     } else if (currentUser) {
-      const docRef = doc(db, 'users', currentUser.uid, 'workdays', key);
+      const docRef = doc(db, "users", currentUser.uid, "workdays", key);
       await setDoc(docRef, { workdays: newWorkdays });
     }
   };
 
   const updateWorkday = async (year, month, day, updatedWorkday) => {
     const workdays = await fetchWorkdays(year, month);
-    const newWorkdays = workdays.map((w) => (w.day === day ? updatedWorkday : w));
+    const newWorkdays = workdays.map((w) =>
+      w.day === day ? updatedWorkday : w
+    );
     const key = formatKey(year, month);
 
     if (isGuest) {
       localStorage.setItem(key, JSON.stringify(newWorkdays));
     } else if (currentUser) {
-      const docRef = doc(db, 'users', currentUser.uid, 'workdays', key);
+      const docRef = doc(db, "users", currentUser.uid, "workdays", key);
       await setDoc(docRef, { workdays: newWorkdays });
     }
   };
@@ -142,7 +159,7 @@ export const BaitoManager = ({ children }) => {
     if (isGuest) {
       localStorage.setItem(key, JSON.stringify(newWorkdays));
     } else if (currentUser) {
-      const docRef = doc(db, 'users', currentUser.uid, 'workdays', key);
+      const docRef = doc(db, "users", currentUser.uid, "workdays", key);
       await setDoc(docRef, { workdays: newWorkdays });
     }
   };
@@ -151,10 +168,14 @@ export const BaitoManager = ({ children }) => {
     if (!isGuest) return;
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       const newUser = userCredential.user;
 
-      const guestSettings = JSON.parse(localStorage.getItem('settings'));
+      const guestSettings = JSON.parse(localStorage.getItem("settings"));
       const guestWorkdays = {};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -165,11 +186,11 @@ export const BaitoManager = ({ children }) => {
 
       const promises = [];
       if (guestSettings) {
-        const settingsRef = doc(db, 'users', newUser.uid, 'settings', 'main');
+        const settingsRef = doc(db, "users", newUser.uid, "settings", "main");
         promises.push(setDoc(settingsRef, guestSettings));
       }
       for (const key in guestWorkdays) {
-        const docRef = doc(db, 'users', newUser.uid, 'workdays', key);
+        const docRef = doc(db, "users", newUser.uid, "workdays", key);
         promises.push(setDoc(docRef, { workdays: guestWorkdays[key] }));
       }
 
@@ -178,7 +199,7 @@ export const BaitoManager = ({ children }) => {
       localStorage.clear();
       setIsGuest(false);
     } catch (error) {
-      console.error('Error migrating guest data:', error);
+      console.error("Error migrating guest data:", error);
       throw error;
     }
   };
@@ -193,7 +214,7 @@ export const BaitoManager = ({ children }) => {
       const newUser = userCredential.user;
 
       // 2. Read all data from localStorage
-      const guestSettings = JSON.parse(localStorage.getItem('settings'));
+      const guestSettings = JSON.parse(localStorage.getItem("settings"));
       const guestWorkdays = {};
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -205,13 +226,15 @@ export const BaitoManager = ({ children }) => {
       // 3. Write the data to Firestore under the new user's UID
       const promises = [];
       if (guestSettings) {
-        const settingsRef = doc(db, 'users', newUser.uid, 'settings', 'main');
+        const settingsRef = doc(db, "users", newUser.uid, "settings", "main");
         // Use merge: true to avoid overwriting data if the user already existed
         promises.push(setDoc(settingsRef, guestSettings, { merge: true }));
       }
       for (const key in guestWorkdays) {
-        const docRef = doc(db, 'users', newUser.uid, 'workdays', key);
-        promises.push(setDoc(docRef, { workdays: guestWorkdays[key] }, { merge: true }));
+        const docRef = doc(db, "users", newUser.uid, "workdays", key);
+        promises.push(
+          setDoc(docRef, { workdays: guestWorkdays[key] }, { merge: true })
+        );
       }
 
       await Promise.all(promises);
@@ -220,7 +243,7 @@ export const BaitoManager = ({ children }) => {
       localStorage.clear();
       setIsGuest(false);
     } catch (error) {
-      console.error('Error migrating guest data to Google account:', error);
+      console.error("Error migrating guest data to Google account:", error);
       throw error;
     }
   };
@@ -236,12 +259,17 @@ export const BaitoManager = ({ children }) => {
         workday.endTime.minute > TIME_BARRIER.minute
       ) {
         singleDaySalary += (TIME_BARRIER.hour - workday.startTime.hour) * wage;
-        singleDaySalary += ((TIME_BARRIER.minute - workday.startTime.minute) / 60) * wage;
-        singleDaySalary += (workday.endTime.hour - TIME_BARRIER.hour) * wage * 1.25;
-        singleDaySalary += ((workday.endTime.minute - TIME_BARRIER.minute) / 60) * wage * 1.25;
+        singleDaySalary +=
+          ((TIME_BARRIER.minute - workday.startTime.minute) / 60) * wage;
+        singleDaySalary +=
+          (workday.endTime.hour - TIME_BARRIER.hour) * wage * 1.25;
+        singleDaySalary +=
+          ((workday.endTime.minute - TIME_BARRIER.minute) / 60) * wage * 1.25;
       } else {
-        singleDaySalary += (workday.endTime.hour - workday.startTime.hour) * wage;
-        singleDaySalary += ((workday.endTime.minute - workday.startTime.minute) / 60) * wage;
+        singleDaySalary +=
+          (workday.endTime.hour - workday.startTime.hour) * wage;
+        singleDaySalary +=
+          ((workday.endTime.minute - workday.startTime.minute) / 60) * wage;
       }
       singleDaySalary += 2 * COMMUTING_COST;
       dailySalary.push(singleDaySalary);
@@ -286,5 +314,9 @@ export const BaitoManager = ({ children }) => {
     calculateDailySalary,
   };
 
-  return <BaitoContext.Provider value={value}>{!isLoading && children}</BaitoContext.Provider>;
+  return (
+    <BaitoContext.Provider value={value}>
+      {!isLoading && children}
+    </BaitoContext.Provider>
+  );
 };

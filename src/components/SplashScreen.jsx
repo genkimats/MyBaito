@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import splashGif from '../assets/NormalMB.gif';
+import React, { useState, useEffect } from "react";
+import splashGif from "../assets/NormalMB.gif";
 
 const SplashScreen = () => {
   const [isVisible, setIsVisible] = useState(true);

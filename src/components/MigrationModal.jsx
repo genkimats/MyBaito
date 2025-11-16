@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react';
-import { BaitoContext } from '../context/BaitoContext';
+import React, { useState, useContext } from "react";
+import { BaitoContext } from "../context/BaitoContext";
 import {
   Modal,
   Box,
@@ -8,30 +8,31 @@ import {
   Button,
   CircularProgress,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: "background.paper",
+  border: "2px solid #000",
   boxShadow: 24,
   p: 4,
 };
 
 function MigrationModal({ open, handleClose }) {
-  const { migrateGuestToAccount, migrateGuestToGoogleAccount } = useContext(BaitoContext);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { migrateGuestToAccount, migrateGuestToGoogleAccount } =
+    useContext(BaitoContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isMigrating, setIsMigrating] = useState(false);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsMigrating(true);
     try {
       await migrateGuestToAccount(email, password);
@@ -44,7 +45,7 @@ function MigrationModal({ open, handleClose }) {
   };
 
   const handleGoogleSubmit = async () => {
-    setError('');
+    setError("");
     setIsMigrating(true);
     try {
       await migrateGuestToGoogleAccount();
@@ -63,7 +64,8 @@ function MigrationModal({ open, handleClose }) {
           Save Your Data
         </Typography>
         <Typography sx={{ mt: 2 }}>
-          Create an account to save your guest data and access it from any device.
+          Create an account to save your guest data and access it from any
+          device.
         </Typography>
 
         {/* Email Form */}
@@ -88,20 +90,39 @@ function MigrationModal({ open, handleClose }) {
             required
             disabled={isMigrating}
           />
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }} disabled={isMigrating}>
-            {isMigrating ? <CircularProgress size={24} /> : 'Create Account & Save'}
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
+            disabled={isMigrating}
+          >
+            {isMigrating ? (
+              <CircularProgress size={24} />
+            ) : (
+              "Create Account & Save"
+            )}
           </Button>
         </form>
 
         <Divider sx={{ my: 2 }}>OR</Divider>
 
         {/* Google Button */}
-        <Button fullWidth variant="outlined" onClick={handleGoogleSubmit} disabled={isMigrating}>
-          {isMigrating ? <CircularProgress size={24} /> : 'Continue with Google'}
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={handleGoogleSubmit}
+          disabled={isMigrating}
+        >
+          {isMigrating ? (
+            <CircularProgress size={24} />
+          ) : (
+            "Continue with Google"
+          )}
         </Button>
 
         {error && (
-          <Typography color="error" sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography color="error" sx={{ mt: 2, textAlign: "center" }}>
             {error}
           </Typography>
         )}
